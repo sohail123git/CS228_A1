@@ -138,79 +138,76 @@ def updateHVM(k):
 for k in range (k1-1):
     temp = []
     for i in range(dim):
-        for j in range(1,dim):
-            temp +=   [And(H[i][j][k],
-                           Not(V[i][j-1][k]),
-                           Not(V[i-1][j-1][k]),
-                           Not(M[i][j-1][k]),
-                           Or(Not(j > 1), Not(H[i][j-2][k])),
-                           Or(Not(j > 1), Not(R[i][j-2][k])),
-                           H[i][j-1][k+1],
-                           Not(H[i][j][k+1]),
-                           updateH(k, i, j),
-                           updateVRM(k),
-                          )
-                      ]
+        for j in range(dim):
+            if j > 0:
+                temp +=   [And(H[i][j][k],
+                                Not(V[i][j-1][k]),
+                                Not(V[i-1][j-1][k]),
+                                Not(M[i][j-1][k]),
+                                Or(Not(j > 1), Not(H[i][j-2][k])),
+                                Or(Not(j > 1), Not(R[i][j-2][k])),
+                                H[i][j-1][k+1],
+                                Not(H[i][j][k+1]),
+                                updateH(k, i, j),
+                                updateVRM(k),
+                                )
+                            ]
 
-    for i in range(dim):
-        for j in range(dim-2):  
-            temp +=   [And(H[i][j][k],
-                           Not(V[i][j+2][k]),
-                           Not(V[i-1][j+2][k]),
-                           Not(M[i][j+2][k]),
-                           Not(H[i][j+2][k]),
-                           Not(R[i][j+2][k]),
-                           H[i][j+1][k+1],
-                           Not(H[i][j][k+1]),
-                           updateH(k, i, j+1),
-                           updateVRM(k),
-                          )
+            if j < (dim-2):
+                temp +=   [And(H[i][j][k],
+                            Not(V[i][j+2][k]),
+                            Not(V[i-1][j+2][k]),
+                            Not(M[i][j+2][k]),
+                            Not(H[i][j+2][k]),
+                            Not(R[i][j+2][k]),
+                            H[i][j+1][k+1],
+                            Not(H[i][j][k+1]),
+                            updateH(k, i, j+1),
+                            updateVRM(k),
+                            )
             ]
-    for i in range(1,dim):
-        for j in range(dim):
-            temp += [And(V[i][j][k],
-                         Not(H[i-1][j][k]),
-                         Not(H[i-1][j-1][k]),
-                         Not(M[i-1][j][k]),
-                         Or(Not(i > 1), Not(V[i-2][j][k])),
-                         Not(R[i-1][j][k]),
-                         Not(R[i-1][j-1][k]),
-                         V[i-1][j][k+1],
-                         Not(V[i][j][k+1]),
-                         updateV(k, i, j),
-                         updateHRM(k),                     
-                      )
-                      ]
-
-    for i in range(dim-2):
-        for j in range(dim):
-            temp += [And(V[i][j][k],
-                         Not(H[i+2][j][k]),
-                         Not(H[i+2][j-1][k]),
-                         Not(M[i+2][j][k]),
-                         Not(V[i+2][j][k]),
-                         Not(R[i+2][j][k]),
-                         Not(R[i+2][j-1][k]),
-                         V[i+1][j][k+1],
-                         Not(V[i][j][k+1]),
-                         updateV(k, i+1, j),
-                         updateHRM(k),                       
+            if i>0:
+                temp += [And(V[i][j][k],
+                            Not(H[i-1][j][k]),
+                            Not(H[i-1][j-1][k]),
+                            Not(M[i-1][j][k]),
+                            Or(Not(i > 1), Not(V[i-2][j][k])),
+                            Not(R[i-1][j][k]),
+                            Not(R[i-1][j-1][k]),
+                            V[i-1][j][k+1],
+                            Not(V[i][j][k+1]),
+                            updateV(k, i, j),
+                            updateHRM(k),                     
                         )
-                    ]
+                        ]
+
+            if i < (dim-2):
+                temp += [And(V[i][j][k],
+                            Not(H[i+2][j][k]),
+                            Not(H[i+2][j-1][k]),
+                            Not(M[i+2][j][k]),
+                            Not(V[i+2][j][k]),
+                            Not(R[i+2][j][k]),
+                            Not(R[i+2][j-1][k]),
+                            V[i+1][j][k+1],
+                            Not(V[i][j][k+1]),
+                            updateV(k, i+1, j),
+                            updateHRM(k),                       
+                            )
+                        ]
                         
-    for i in range(dim):
-        for j in range(dim-2): 
-            temp += [And(R[i][j][k],
-                         Not(V[i][j+2][k]),
-                         Not(V[i-1][j+2][k]),
-                         Not(M[i][j+2][k]),                     
-                         Not(H[i][j+2][k]),
-                         R[i][j+1][k+1],
-                         Not(R[i][j][k+1]),
-                         updateR(k, i, j+1),
-                         updateHVM(k),
-                        ) 
-                    ]
+            if j < (dim-2):
+                temp += [And(R[i][j][k],
+                            Not(V[i][j+2][k]),
+                            Not(V[i-1][j+2][k]),
+                            Not(M[i][j+2][k]),                     
+                            Not(H[i][j+2][k]),
+                            R[i][j+1][k+1],
+                            Not(R[i][j][k+1]),
+                            updateR(k, i, j+1),
+                            updateHVM(k),
+                            ) 
+                        ]
              
     s.add(atmost_one(temp))
     s.add(atleast_one(temp))
@@ -261,4 +258,3 @@ for k in range(2,k1):
                     print(i,",",j, sep="")
                 else:
                    print(i,",",j+1, sep="")
-
