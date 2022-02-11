@@ -97,27 +97,7 @@ def updateV(k, i, j):
 
     return And(temp)
 
-
-
-def updateVM(k):
-    temp = []
-    for p in range(dim):
-        for q in range(dim):
-            temp += [V[p][q][k+1] == V[p][q][k]]
-
-    return And(temp)
-
-
-def updateHM(k):
-    temp = []
-    for p in range(dim):
-        for q in range(dim):
-            temp += [H[p][q][k+1] == H[p][q][k]] 
-
-    return And(temp)
-
-
-def updateHVM(k):
+def updateHV(k):
     temp = []
     for p in range(dim):
         for q in range(dim):
@@ -140,7 +120,7 @@ for k in range (k1-1):
                                 H[i][j-1][k+1],
                                 Not(H[i][j][k+1]),
                                 updateH(k, i, j),
-                                updateVM(k),
+                                updateV(k, -1, -1),
                                 )
                             ]
 
@@ -153,7 +133,7 @@ for k in range (k1-1):
                             H[i][j+1][k+1],
                             Not(H[i][j][k+1]),
                             updateH(k, i, j+1),
-                            updateVM(k),
+                            updateV(k, -1, -1),
                             )
             ]
             if (i>0) and v[j]:
@@ -165,7 +145,7 @@ for k in range (k1-1):
                             V[i-1][j][k+1],
                             Not(V[i][j][k+1]),
                             updateV(k, i, j),
-                            updateHM(k),                     
+                            updateH(k, -1, -1),                     
                         )
                         ]
 
@@ -178,7 +158,7 @@ for k in range (k1-1):
                             V[i+1][j][k+1],
                             Not(V[i][j][k+1]),
                             updateV(k, i+1, j),
-                            updateHM(k),                       
+                            updateH(k, -1, -1),                       
                             )
                         ]
              
