@@ -80,9 +80,10 @@ def updateH(k, i, j):
     for p in range(dim):
         for q in range(dim):
             if(((p == i) and (q == (j-1))) or ((p == i) and (q == j))):
-                temp = temp  #donothing
+                temp += [V[p][q][k+1] == V[p][q][k]]
             else:
                 temp += [H[p][q][k+1] == H[p][q][k]]
+                temp += [V[p][q][k+1] == V[p][q][k]]
     return And(temp)
 
 
@@ -91,18 +92,10 @@ def updateV(k, i, j):
     for p in range(dim):
         for q in range(dim):
             if(((p == (i-1)) and (q == j)) or ((p == i) and (q == j))):
-                temp = temp #donothing
+                temp += [H[p][q][k+1] == H[p][q][k]]
             else:
                 temp += [V[p][q][k+1] == V[p][q][k]]
-
-    return And(temp)
-
-def updateHV(k):
-    temp = []
-    for p in range(dim):
-        for q in range(dim):
-            temp += [V[p][q][k+1] == V[p][q][k]]
-            temp += [H[p][q][k+1] == H[p][q][k]]
+                temp += [H[p][q][k+1] == H[p][q][k]]
 
     return And(temp)
 
@@ -120,7 +113,6 @@ for k in range (k1-1):
                                 H[i][j-1][k+1],
                                 Not(H[i][j][k+1]),
                                 updateH(k, i, j),
-                                updateV(k, -1, -1),
                                 )
                             ]
 
@@ -133,7 +125,6 @@ for k in range (k1-1):
                             H[i][j+1][k+1],
                             Not(H[i][j][k+1]),
                             updateH(k, i, j+1),
-                            updateV(k, -1, -1),
                             )
             ]
             if (i>0) and v[j]:
@@ -144,8 +135,7 @@ for k in range (k1-1):
                             Or(Not(i > 1), Not(V[i-2][j][k])),
                             V[i-1][j][k+1],
                             Not(V[i][j][k+1]),
-                            updateV(k, i, j),
-                            updateH(k, -1, -1),                     
+                            updateV(k, i, j),                
                         )
                         ]
 
@@ -157,8 +147,7 @@ for k in range (k1-1):
                             Not(V[i+2][j][k]),
                             V[i+1][j][k+1],
                             Not(V[i][j][k+1]),
-                            updateV(k, i+1, j),
-                            updateH(k, -1, -1),                       
+                            updateV(k, i+1, j),                     
                             )
                         ]
              
