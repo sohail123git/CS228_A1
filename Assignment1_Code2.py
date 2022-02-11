@@ -1,31 +1,37 @@
 from z3 import *
+import sys
 import array as arr
 from itertools import combinations
+inputtext = []
+lines = -1
+with open(sys.argv[1]) as f:
+    contents = f.read()
+    contents.strip()
+    for entry in contents.split('\n'):
+        lines += 1
+        inputtext.append(entry.split(','))
 
-def atleast_one(literals):
-    return Or(literals)
-
-def atmost_one(literals):
-    c=[]
-    for pair in combinations(literals,2):
-        a, b = pair[0], pair[1]
-        c += [Or([Not(a),Not(b)])]
-    return And(c)
 
 s = Solver()
 
-k1 = 11
+k1 = int(inputtext[0][1])
 k1 = k1+1
-dim = 6
+dim = int(inputtext[0][0])
 
-rx = 2
-ry = 1 
-o = arr.array('i', [0, 0, 1, 2, 2])
-x = arr.array('i', [1, 2, 3, 0, 3])
-y = arr.array('i', [3, 5, 2, 3, 1])
+rx = int(inputtext[1][0])
+ry = int(inputtext[1][1])
+
+o = []
+x = []
+y = []
 
 
-cars = 5
+for i in range(2, lines):
+    o.append(int(inputtext[i][0]))
+    x.append(int(inputtext[i][1]))
+    y.append(int(inputtext[i][2]))
+
+cars = lines-2 #cars+mines-redcar
 
 
 H = [ [ [ Bool("h_%s_%s_%s" % (i, j, k)) for k in range(k1) ] for j in range(dim) ] for i in range(dim) ]
@@ -50,10 +56,16 @@ for w in range(cars):
     else: 
         M[x[w]][y[w]][0] = True
 
-# for i in range(dim):
-#     print()
-#     for j in range(dim):
-#         print(M[i][j][0], end=" ")
+
+def atleast_one(literals):
+    return Or(literals)
+
+def atmost_one(literals):
+    c=[]
+    for pair in combinations(literals,2):
+        a, b = pair[0], pair[1]
+        c += [Or([Not(a),Not(b)])]
+    return And(c)
 
 def updateH(k, i, j):
     temp = []
@@ -212,23 +224,41 @@ s.add(Or(condcheck))
 result = s.check()
 model = s.model()
 
-for k in range(1,k1):
+for i in range(dim):
+        for j in range(dim):
+            if((H[i][j][0] == False) and is_true(model[H[i][j][1]])):
+                if(H[i][j+1][0] == False):
+                    print(i,",",j, sep="")
+                else:
+                    print(i,",",j+1, sep="")
+            elif((V[i][j][0] == False) and is_true(model[V[i][j][1]])):
+                if(H[i+1][j][0] == False):
+                    print(i,",",j, sep="")
+                else:
+                    print(i+1,",",j, sep="")
+            elif((R[i][j][0] == False) and is_true(model[R[i][j][1]])):
+                if(R[i][j+1][0] == False):
+                    print(i,",",j, sep="")
+                else:
+                    print(i,",",j+1, sep="")
+
+
+for k in range(2,k1):
     for i in range(dim):
         for j in range(dim):
             if(is_false(model[H[i][j][k-1]]) and is_true(model[H[i][j][k]])):
                 if(is_false(model[H[i][j+1][k-1]])):
-                    print ("H", i, j)
+                    print(i,",",j, sep="")
                 else:
-                    print ("H", i, j+1)
+                    print(i,",",j+1, sep="")
             elif(is_false(model[V[i][j][k-1]]) and is_true(model[V[i][j][k]])):
                 if(is_false(model[V[i+1][j][k-1]])):
-                    print ("V", i, j)
+                    print(i,",",j, sep="")
                 else:
-                    print ("V", i+1, j)
+                    print(i+1,",",j, sep="")
             elif(is_false(model[R[i][j][k-1]]) and is_true(model[R[i][j][k]])):
                 if(is_false(model[R[i][j+1][k-1]])):
-                    print ("R", i, j)
+                    print(i,",",j, sep="")
                 else:
-                    print ("R", i, j+1)
-
+                   print(i,",",j+1, sep="")
 
